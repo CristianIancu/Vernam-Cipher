@@ -2,80 +2,54 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "hpp/Vernam.hpp"
 
 using namespace std;
 
-// Function to perform Vernam Cipher encryption
-string vernamCipherEncrypt(const string& plaintext, const string& key) {
-    string ciphertext;
-    int len = plaintext.length();
-
-    for (int i = 0; i < len; i++) {
-        // XOR the plaintext character with the key character
-        char c = plaintext[i] ^ key[i];
-
-        // Append the encrypted character to the ciphertext string
-        ciphertext += c;
-    }
-
-    return ciphertext;
-}
-
-// Function to perform Vernam Cipher decryption
-string vernamCipherDecrypt(const string& ciphertext, const string& key) {
-    string plaintext;
-    int len = ciphertext.length();
-
-    for (int i = 0; i < len; i++) {
-        // XOR the ciphertext character with the key character
-        char c = ciphertext[i] ^ key[i];
-
-        // Append the decrypted character to the plaintext string
-        plaintext += c;
-    }
-
-    return plaintext;
-}
-
-int main(int argc, char *argv[]) {
+bool checkingInput(int argc){
     if (argc != 4) {
-        cout << "Usage: vernamCipher <encrypt/decrypt> <input_file> <output_file>" << endl;
-        return 1;
+        cout << "Usage: vernam <encrypt/decrypt> <inputFile> <outputFile>" << endl;
+        return false;
     }
+    return true;
+}
+int main(int argc, char *argv[]) {
+
+    if (!checkingInput(argc)) return 1;
 
     string mode = argv[1];
-    string input_file = argv[2];
-    string output_file = argv[3];
-    string key_file = "key.txt";
+    string inputFile = argv[2];
+    string outputFile = argv[3];
+    string keyFile = "key";
 
     vector<char> buffer;
-    string input_text, output_text, key;
+    string inputText, outputText, key;
 
     // Read the input file
-    ifstream input_stream(input_file);
-    if (input_stream) {
-        input_stream.seekg(0, ios::end);
-        int length = input_stream.tellg();
-        input_stream.seekg(0, ios::beg);
+    ifstream inputStream(inputFile);
+    if (inputStream) {
+        inputStream.seekg(0, ios::end);
+        int length = inputStream.tellg();
+        inputStream.seekg(0, ios::beg);
 
         buffer.resize(length);
-        input_stream.read(&buffer[0], length);
+        inputStream.read(&buffer[0], length);
 
-        input_text = string(buffer.begin(), buffer.end());
+        inputText = string(buffer.begin(), buffer.end());
     } else {
         cout << "Error: input file not found." << endl;
         return 1;
     }
 
     // Read the key file
-    ifstream key_stream(key_file);
-    if (key_stream) {
-        key_stream.seekg(0, ios::end);
-        int length = key_stream.tellg();
-        key_stream.seekg(0, ios::beg);
+    ifstream keyStream(keyFile);
+    if (keyStream) {
+        keyStream.seekg(0, ios::end);
+        int length = keyStream.tellg();
+        keyStream.seekg(0, ios::beg);
 
         buffer.resize(length);
-        key_stream.read(&buffer[0], length);
+        keyStream.read(&buffer[0], length);
 
         key = string(buffer.begin(), buffer.end());
     } else {
@@ -85,19 +59,19 @@ int main(int argc, char *argv[]) {
 
     // Perform encryption or decryption, depending on mode
     if (mode == "encrypt") {
-        output_text = vernamCipherEncrypt(input_text, key);
+        outputText = Vernam::CipherEncrypt(inputText, key);
     } else if (mode == "decrypt") {
-        output_text = vernamCipherDecrypt(input_text, key);
+        outputText = Vernam::CipherDecrypt(inputText, key);
     } else {
         cout << "Invalid mode specified. Mode must be either \"encrypt\" or \"decrypt\"." << endl;
         return 1;
     }
 
     // Write output to file
-    ofstream output_stream(output_file);
-    if (output_stream) {
-        output_stream << output_text;
-        cout << "Output written to " << output_file << endl;
+    ofstream outputStream(outputFile);
+    if (outputStream) {
+        outputStream << outputText;
+        cout << "Output written to " << outputFile << endl;
     } else {
         cout << "Error: could not write output to file." << endl;
         return 1;
