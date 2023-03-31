@@ -6,8 +6,8 @@ To clone:
 https://github.com/CristianIancu/Vernam-Cipher.git
 
 To build:
-cd Vernam-Cipher/build-dir
-cmake ..
+cd Vernam-Cipher/build-dir;
+cmake ..;
 make
 
 To execute:
